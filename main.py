@@ -2,7 +2,6 @@ import io
 import os
 import typing
 from base64 import b64encode
-import pickle
 
 import discord
 import requests

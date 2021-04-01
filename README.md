@@ -7,7 +7,7 @@ A Discord bot to remove background images from images implemented in Python
 $ pip install -r requirements.txt
 ```
 
-2. Place your tokens in the placeholders in ```./env/.env```.
+2. Replace placeholders in ```./env/.env``` with your tokens.
 
 3. Run the bot
 ```

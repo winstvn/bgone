@@ -11,5 +11,5 @@ $ pip install -r requirements.txt
 
 3. Run the bot
 ```
-python bgone_bot.py
+$ python bgone_bot.py
 ```

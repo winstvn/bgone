@@ -18,8 +18,8 @@ bot = commands.Bot(command_prefix='!')
 @bot.event
 async def on_ready():
     print(f'{bot.user.name} has connected to Discord!')
-    
-    
+
+
 @bot.event
 async def on_error(event, *args, **kwargs):
     pass
@@ -34,7 +34,7 @@ async def bgone(ctx, url: typing.Optional[str] = ''):
         url (str, optional): A url containing an image to remove the background
                              from. If one is not given, then will attempt to
                              search for image in message history.
-    """    
+    """
     if url:
         await remove_bg(ctx, url)
     else:
@@ -45,10 +45,10 @@ async def bgone(ctx, url: typing.Optional[str] = ''):
         else:
             await ctx.send('Image not found!')
             return
-        
+
         await remove_bg(ctx, url)
-        
-                    
+
+
 @bot.command(name='bgone-replacebg')
 async def bgone_replacebg(ctx, bg_url: str, url: typing.Optional[str] = ''):
     """attempts to remove background from the image url and replace it with the
@@ -60,7 +60,7 @@ async def bgone_replacebg(ctx, bg_url: str, url: typing.Optional[str] = ''):
         url (str, optional): An url containing an image to remove the background
                              from. If one is not given, then will attempt to
                              search for image in message history.
-    """    
+    """
     if url:
         await remove_bg(ctx, url, bg_url)
     else:
@@ -71,14 +71,14 @@ async def bgone_replacebg(ctx, bg_url: str, url: typing.Optional[str] = ''):
         else:
             await ctx.send('No image found!')
             return
-        
+
         await remove_bg(ctx, url, bg_url)
 
 
 @bot.command(name='credits-left')
 async def credits_left(ctx):
     await ctx.send(f'{num_credits_left()} free API calls left')
-    
-    
+
+
 if __name__ == '__main__':
     bot.run(TOKEN)

@@ -1,28 +1,28 @@
+from api_key_list import api_key_list
 import os
 import typing
 
-from utility import *
+import utility as util
 
 from discord.ext import commands
 from dotenv import load_dotenv
 
 load_dotenv('./env/.env')
 TOKEN = os.getenv('DISCORD_TOKEN')
-API_KEY = os.getenv('REMOVE_BG_API_KEY')
-
+API_KEYS = os.getenv('REMOVE_BG_API_KEY').split(', ')
 MSG_HISTORY_LIMIT = 10
 
 bot = commands.Bot(command_prefix='!')
-
+key_list = api_key_list(API_KEYS, util.API_URL+'/account')
 
 @bot.event
 async def on_ready():
     print(f'{bot.user.name} has connected to Discord!')
 
 
-@bot.event
-async def on_error(event, *args, **kwargs):
-    pass
+# @bot.event
+# async def on_command_error(ctx, error):
+#     pass
 
 
 @bot.command()
@@ -36,17 +36,17 @@ async def bgone(ctx, url: typing.Optional[str] = ''):
                              search for image in message history.
     """
     if url:
-        await remove_bg(ctx, url)
+        await util.remove_bg(ctx, key_list, url)
     else:
         async for msg in ctx.channel.history(limit=MSG_HISTORY_LIMIT):
-            url = get_message_img_url(msg)
+            url = util.get_message_img_url(msg)
             if url is not None:
                 break
         else:
             await ctx.send('Image not found!')
             return
 
-        await remove_bg(ctx, url)
+        await util.remove_bg(ctx, key_list, url)
 
 
 @bot.command(name='bgone-replacebg')
@@ -62,22 +62,22 @@ async def bgone_replacebg(ctx, bg_url: str, url: typing.Optional[str] = ''):
                              search for image in message history.
     """
     if url:
-        await remove_bg(ctx, url, bg_url)
+        await util.remove_bg(ctx, key_list, url, bg_url)
     else:
         async for msg in ctx.channel.history(limit=MSG_HISTORY_LIMIT):
-            url = get_message_img_url(msg)
+            url = util.get_message_img_url(msg)
             if url is not None:
                 break
         else:
             await ctx.send('No image found!')
             return
 
-        await remove_bg(ctx, url, bg_url)
+        await util.remove_bg(ctx, key_list, url, bg_url)
 
 
 @bot.command(name='credits-left')
 async def credits_left(ctx):
-    await ctx.send(f'{num_credits_left()} free API calls left')
+    await ctx.send(f'{util.num_credits_left(key_list)} free API calls left')
 
 
 if __name__ == '__main__':

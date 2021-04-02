@@ -129,8 +129,8 @@ def validate_response(response: requests.Response) -> typing.Union[str, None]:
     return err_msg
 
 
-async def remove_bg(ctx, url: str, *args):
-    response = remove_bg_from_img(url, *args)
+async def remove_bg(ctx, url: str, bg_url: str = ''):
+    response = remove_bg_from_img(url, bg_url)
     err_msg = validate_response(response)
     if err_msg is None:
         await ctx.send(file=byte_to_discord_file(response.content))

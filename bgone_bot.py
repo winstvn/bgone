@@ -7,7 +7,7 @@ import utility as util
 from discord.ext import commands
 from dotenv import load_dotenv
 
-load_dotenv('./env/.env')
+load_dotenv('.env')
 TOKEN = os.getenv('DISCORD_TOKEN')
 API_KEYS = os.getenv('REMOVE_BG_API_KEY').split(', ')
 MSG_HISTORY_LIMIT = 10
@@ -25,8 +25,8 @@ async def on_ready():
 #     pass
 
 
-@bot.command()
-async def bgone(ctx, url: typing.Optional[str] = ''):
+@bot.command(name='removebg')
+async def removebg(ctx, url: typing.Optional[str] = ''):
     """attempts to remove the background from an image url given as a parameter 
     or the most recently sent image.
 
@@ -49,8 +49,8 @@ async def bgone(ctx, url: typing.Optional[str] = ''):
         await util.remove_bg(ctx, key_list, url)
 
 
-@bot.command(name='bgone-replacebg')
-async def bgone_replacebg(ctx, bg_url: str, url: typing.Optional[str] = ''):
+@bot.command(name='replacebg')
+async def replacebg(ctx, bg_url: str, url: typing.Optional[str] = ''):
     """attempts to remove background from the image url and replace it with the
     given image. If image url is not provided, then will search for an image in
     message history.

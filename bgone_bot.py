@@ -1,3 +1,4 @@
+from discord import message
 from api_key_list import api_key_list
 import os
 import typing
@@ -50,29 +51,17 @@ async def removebg(ctx, url: typing.Optional[str] = ''):
 
 
 @bot.command(name='replacebg')
-async def replacebg(ctx, bg_url: str, url: typing.Optional[str] = ''):
+async def replacebg(ctx, url: str, bg_url: str):
     """attempts to remove background from the image url and replace it with the
-    given image. If image url is not provided, then will search for an image in
-    message history.
+    given image.
 
     Args:
-        bg_url (str): An url containing the image to replace background with.
-        url (str, optional): An url containing an image to remove the background
+        url (str): A url containing an image to remove the background
                              from. If one is not given, then will attempt to
                              search for image in message history.
+        bg_url (str): A url containing the image to replace background with.
     """
-    if url:
-        await util.remove_bg(ctx, key_list, url, bg_url)
-    else:
-        async for msg in ctx.channel.history(limit=MSG_HISTORY_LIMIT):
-            url = util.get_message_img_url(msg)
-            if url is not None:
-                break
-        else:
-            await ctx.send('No image found!')
-            return
-
-        await util.remove_bg(ctx, key_list, url, bg_url)
+    await util.remove_bg(ctx, key_list, url, bg_url)
 
 
 @bot.command(name='credits-left')

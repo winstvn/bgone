@@ -5,6 +5,7 @@ from base64 import b64encode
 import discord
 import requests
 from api_key_list import api_key_list
+from PIL import Image
 
 API_URL = 'https://api.remove.bg/v1.0'
 
@@ -46,14 +47,17 @@ def remove_bg_from_img(api_key: str, img_url: str, bg_img_url: str = '', ) -> re
         requests.Response: the response from the call
     """
     headers = {'X-Api-Key': api_key}
-    data = {'crop': True,
-            'image_url': img_url,
-            'format': 'png'}
+    # data = {'crop': True,
+    #         'image_url': img_url,
+    #         'format': 'png'}
+    data = {'image_url': img_url,
+            'crop': True}
 
-    if not bg_img_url:
+    if bg_img_url != '':
         data['bg_image_url'] = bg_img_url
+        data['crop'] = False
 
-    return requests.post(API_URL + '/removebg', headers=headers, data=data)
+    return requests.post(API_URL + '/removebg', headers=headers, data=data, stream=True)
 
 
 def byte_to_discord_file(obj: bytes) -> discord.File:

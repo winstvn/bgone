@@ -5,7 +5,6 @@ from base64 import b64encode
 import discord
 import requests
 from api_key_list import api_key_list
-from PIL import Image
 
 API_URL = 'https://api.remove.bg/v1.0'
 

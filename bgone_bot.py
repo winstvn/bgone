@@ -1,4 +1,3 @@
-from discord import message
 from api_key_list import api_key_list
 import os
 import typing

@@ -1,5 +1,5 @@
 # bgone 🤖
-A Discord bot to remove background images from images implemented in Python
+A Discord bot for removing the background from images using the [remove.bg API](https://www.remove.bg/api)
 
 ## Usage
 1. Install the required libraries using pip

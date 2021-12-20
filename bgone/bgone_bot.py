@@ -40,7 +40,7 @@ async def removebg(ctx, url: typing.Optional[str] = ''):
                    use an image from the message history.
     """
     if url:
-        await util.remove_bg(ctx, key_list, url)
+        result_img = util.remove_bg(key_list, url)
     else:
         async for msg in ctx.channel.history(limit=MSG_HISTORY_LIMIT):
             url = util.extract_message_img_url(msg)
@@ -50,7 +50,12 @@ async def removebg(ctx, url: typing.Optional[str] = ''):
             await ctx.send('Image not found!')
             return
 
-        await util.remove_bg(ctx, key_list, url)
+        result_img = util.remove_bg(key_list, url)
+    
+    if isinstance(result_img, str):
+        await ctx.send(result_img)
+    else:
+        await ctx.send(file=util.byte_to_discord_file(result_img))
 
 
 # @bot.command(name='emojify')

@@ -78,31 +78,31 @@ def validate_response(response: requests.Response) -> typing.Union[str, None]:
         return None
 
     if response.status_code == 400:
-        err_msg = 'Invalid parameters or the foreground cannot be detected.'
+        err_msg = 'The foreground cannot be detected.'
     elif response.status_code == 402:
         err_msg = 'Out of API credits!'
     elif response.status_code == 429:
         err_msg = 'Rate limit exceeded. Please try again later.'
     else:
-        err_msg = 'Uncaught exception'
+        err_msg = 'Uncaught HTTP exception.'
     return err_msg
 
 
-async def remove_bg(ctx, api_keys: api_key_list, url: str) -> None:
+def remove_bg(api_keys: api_key_list, url: str) -> None:
     """Attempts to remove the background from the image given in the url.
 
     Args:
-        ctx ([type]): The discord context object 
         api_keys (api_key_list): An api_key_list object
         url (str): The url containing the image to be processed
-    """    
-    if api_keys.curr_key is not None:
-        response = remove_bg_from_img(api_keys.curr_key, url)
-        err_msg = validate_response(response)
-        if err_msg is None:
-            await ctx.send(file=byte_to_discord_file(response.content))
-            api_keys.use_key()
-        else:
-            await ctx.send(err_msg)
+    """
+    if api_keys.curr_key is None:
+        return 'Out of API credits!'
+    
+    response = remove_bg_from_img(api_keys.curr_key, url)
+    err_msg = validate_response(response)
+    
+    if err_msg is None:
+        api_keys.use_key()
+        return response.content
     else:
-        await ctx.send('Out of API credits!')
+        return err_msg

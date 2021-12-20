@@ -1,16 +1,8 @@
-from api_key_list import api_key_list
-import os
-import typing
+from discord.ext import commands
 
 import utility as util
-
-from discord.ext import commands
-from dotenv import load_dotenv
-
-load_dotenv('.env')
-TOKEN = os.getenv('DISCORD_TOKEN')
-API_KEYS = os.getenv('REMOVE_BG_API_KEY').split(', ')
-MSG_HISTORY_LIMIT = 10
+from api_key_list import api_key_list
+from config import *
 
 bot = commands.Bot(command_prefix='!')
 key_list = api_key_list(API_KEYS, util.API_URL+'/account')

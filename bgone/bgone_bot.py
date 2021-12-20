@@ -35,15 +35,15 @@ async def removebg(ctx, url: typing.Optional[str] = ''):
     or the most recently sent image.
 
     Args:
-        url (str, optional): A url containing an image to remove the background \
-                             from. If one is not given, then begone bot will \
-                             attempt to use an image from the message history.
+        url (str): A optional url containing an image to remove the background \
+                   from. If one is not given, then begone bot will attempt to \
+                   use an image from the message history.
     """
     if url:
         await util.remove_bg(ctx, key_list, url)
     else:
         async for msg in ctx.channel.history(limit=MSG_HISTORY_LIMIT):
-            url = util.get_message_img_url(msg)
+            url = util.extract_message_img_url(msg)
             if url is not None:
                 break
         else:
@@ -51,6 +51,10 @@ async def removebg(ctx, url: typing.Optional[str] = ''):
             return
 
         await util.remove_bg(ctx, key_list, url)
+
+
+# @bot.command(name='emojify')
+# async def emojify(ctx):
 
 
 @bot.command(name='credits-left')

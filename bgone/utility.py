@@ -41,7 +41,7 @@ def byte_to_discord_file(obj: bytes) -> discord.File:
     return discord.File(obj)
 
 
-def get_message_img_url(msg: discord.Message) -> typing.Union[str, None]:
+def extract_message_img_url(msg: discord.Message) -> typing.Union[str, None]:
     """Returns the first valid image url in the message or None if one cannot 
     be found.
 

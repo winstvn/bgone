@@ -58,10 +58,6 @@ async def removebg(ctx, url: typing.Optional[str] = ''):
         await ctx.send(file=util.byte_to_discord_file(result_img))
 
 
-# @bot.command(name='emojify')
-# async def emojify(ctx):
-
-
 @bot.command(name='credits-left')
 async def credits_left(ctx):
     """Displays the number of free API calls left.

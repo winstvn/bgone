@@ -5,6 +5,7 @@ import discord
 import requests
 from api_key_list import api_key_list
 from config import API_URL
+from PIL import Image
 
 
 def remove_bg_from_img(api_key: str, img_url: str) -> requests.Response:
@@ -25,6 +26,29 @@ def remove_bg_from_img(api_key: str, img_url: str) -> requests.Response:
             'crop': True}
 
     return requests.post(API_URL + '/removebg', headers=headers, data=data, stream=True)
+
+
+def crop_to_bbox(im_bytes: bytes) -> bytes:
+    """Crop the image byte array to smallest non-zero image array.
+
+    Args:
+        im_bytes (bytes): Byte array representation of the image
+
+    Returns:
+        bytes: Byte array representation of the cropped image
+    """    
+    result_img_btye = io.BytesIO()
+    
+    with Image.open(io.BytesIO(im_bytes)) as im:
+        bbox = im.getbbox()
+        
+        if bbox is None:
+            return
+        
+        im = im.crop(bbox)
+        im.save(result_img_btye, format='PNG')
+        
+    return result_img_btye.getvalue()
 
 
 def byte_to_discord_file(obj: bytes) -> discord.File:
@@ -103,6 +127,6 @@ def remove_bg(api_keys: api_key_list, url: str) -> None:
     
     if err_msg is None:
         api_keys.use_key()
-        return response.content
+        return crop_to_bbox(response.content)
     else:
         return err_msg

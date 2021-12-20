@@ -39,23 +39,24 @@ async def removebg(ctx, url: typing.Optional[str] = ''):
                    from. If one is not given, then begone bot will attempt to \
                    use an image from the message history.
     """
-    if url:
-        result_img = util.remove_bg(key_list, url)
-    else:
-        async for msg in ctx.channel.history(limit=MSG_HISTORY_LIMIT):
-            url = util.extract_message_img_url(msg)
-            if url is not None:
-                break
+    async with ctx.typing():
+        if url:
+            result_img = util.remove_bg(key_list, url)
         else:
-            await ctx.send('Image not found!')
-            return
+            async for msg in ctx.channel.history(limit=MSG_HISTORY_LIMIT):
+                url = util.extract_message_img_url(msg)
+                if url is not None:
+                    break
+            else:
+                await ctx.send('Image not found!')
+                return
 
-        result_img = util.remove_bg(key_list, url)
-    
-    if isinstance(result_img, str):
-        await ctx.send(result_img)
-    else:
-        await ctx.send(file=util.byte_to_discord_file(result_img))
+            result_img = util.remove_bg(key_list, url)
+        
+        if isinstance(result_img, str):
+            await ctx.send(result_img)
+        else:
+            await ctx.send(file=util.byte_to_discord_file(result_img))
 
 
 @bot.command(name='credits-left')

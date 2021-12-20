@@ -1,31 +1,35 @@
+import typing
+
 from discord.ext import commands
 
 import utility as util
 from api_key_list import api_key_list
 from config import *
 
+# initialize the bot and the key list
 bot = commands.Bot(command_prefix='!')
 key_list = api_key_list(API_KEYS, util.API_URL+'/account')
+
 
 @bot.event
 async def on_ready():
     print(f'{bot.user.name} has connected to Discord!')
+    
 
-
-# @bot.event
-# async def on_command_error(ctx, error):
-#     pass
+@bot.event
+async def on_message():
+    pass
 
 
 @bot.command(name='removebg')
 async def removebg(ctx, url: typing.Optional[str] = ''):
-    """attempts to remove the background from an image url given as a parameter 
+    """Attempts to remove the background from an image url given as a parameter 
     or the most recently sent image.
 
     Args:
-        url (str, optional): A url containing an image to remove the background
-                             from. If one is not given, then will attempt to
-                             search for image in message history.
+        url (str, optional): A url containing an image to remove the background \
+                             from. If one is not given, then begone bot will \
+                             attempt to use an image from the message history.
     """
     if url:
         await util.remove_bg(ctx, key_list, url)
@@ -41,23 +45,11 @@ async def removebg(ctx, url: typing.Optional[str] = ''):
         await util.remove_bg(ctx, key_list, url)
 
 
-@bot.command(name='replacebg')
-async def replacebg(ctx, url: str, bg_url: str):
-    """attempts to remove background from the image url and replace it with the
-    given image.
-
-    Args:
-        url (str): A url containing an image to remove the background
-                             from. If one is not given, then will attempt to
-                             search for image in message history.
-        bg_url (str): A url containing the image to replace background with.
-    """
-    await util.remove_bg(ctx, key_list, url, bg_url)
-
-
 @bot.command(name='credits-left')
 async def credits_left(ctx):
-    await ctx.send(f'{util.num_credits_left(key_list)} free API calls left')
+    """Displays the number of free API calls left.
+    """    
+    await ctx.send(f'{key_list.get_total_credits()} free API calls left')
 
 
 if __name__ == '__main__':

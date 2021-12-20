@@ -1,7 +1,7 @@
 # bgone 🤖
 A Discord bot for removing the background from images using the [remove.bg](https://www.remove.bg/api) background removal API
 
-[Invite this bot to your server!](https://discord.com/api/oauth2/authorize?client_id=781945733121048576&permissions=116736&scope=bot)
+[Invite this bot to your server!](https://discord.com/api/oauth2/authorize?client_id=781945733121048576&permissions=1073810496&scope=bot)
 
 ## Features
 - You can specify more than 1 API key to extend the number of free remove.bg API calls per month.

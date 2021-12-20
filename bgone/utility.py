@@ -8,29 +8,6 @@ from api_key_list import api_key_list
 from config import API_URL
 
 
-def image_url_to_b64(url: str) -> typing.Union[str, None]:
-    """Converts the image located at the url to a base64 encoded string. Returns
-    None if the url does not contain an image or if the request fails.
-
-    Args:
-        url (str): the url containing the image
-
-    Returns:
-        str or None: the base64 encoded image or None if request failed or
-                     returns non-image object
-    """
-    response = requests.get(url)
-
-    if (response.status_code != requests.codes.ok or
-            not response.headers['Content-Type'].lower().startswith('image/')):
-        return None
-    else:
-        uri = ("data:" +
-               response.headers['Content-Type'] + ";" +
-               "base64," + b64encode(response.content).decode("utf-8"))
-        return uri
-
-
 def remove_bg_from_img(api_key: str, img_url: str, bg_img_url: str = '', ) -> requests.Response:
     """Removes the background from the image in the url and returns the response 
     object. If a bg_img_url is given, then replace the background with the 

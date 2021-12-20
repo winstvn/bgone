@@ -5,8 +5,7 @@ from base64 import b64encode
 import discord
 import requests
 from api_key_list import api_key_list
-
-API_URL = 'https://api.remove.bg/v1.0'
+from config import API_URL
 
 
 def image_url_to_b64(url: str) -> typing.Union[str, None]:

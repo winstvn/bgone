@@ -9,7 +9,7 @@ from config import API_URL
 
 
 def image_url_to_b64(url: str) -> typing.Union[str, None]:
-    """converts the image located at the url to a base64 encoded string. Returns
+    """Converts the image located at the url to a base64 encoded string. Returns
     None if the url does not contain an image or if the request fails.
 
     Args:
@@ -32,7 +32,7 @@ def image_url_to_b64(url: str) -> typing.Union[str, None]:
 
 
 def remove_bg_from_img(api_key: str, img_url: str, bg_img_url: str = '', ) -> requests.Response:
-    """removes the background from the image in the url and returns the response 
+    """Removes the background from the image in the url and returns the response 
     object. If a bg_img_url is given, then replace the background with the 
     background image.
 

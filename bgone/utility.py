@@ -1,6 +1,5 @@
 import io
 import typing
-from base64 import b64encode
 
 import discord
 import requests
@@ -8,7 +7,7 @@ from api_key_list import api_key_list
 from config import API_URL
 
 
-def remove_bg_from_img(api_key: str, img_url: str, bg_img_url: str = '', ) -> requests.Response:
+def remove_bg_from_img(api_key: str, img_url: str) -> requests.Response:
     """Removes the background from the image in the url and returns the response 
     object. If a bg_img_url is given, then replace the background with the 
     background image.
@@ -16,7 +15,6 @@ def remove_bg_from_img(api_key: str, img_url: str, bg_img_url: str = '', ) -> re
     Args:
         api_key (str): the API key to use
         img_url (str): the url containing the image to process
-        bg_img_url (str, optional): the url containing the background image
 
     Returns:
         requests.Response: the response from the call
@@ -25,10 +23,6 @@ def remove_bg_from_img(api_key: str, img_url: str, bg_img_url: str = '', ) -> re
 
     data = {'image_url': img_url,
             'crop': True}
-
-    if bg_img_url != '':
-        data['bg_image_url'] = bg_img_url
-        data['crop'] = False
 
     return requests.post(API_URL + '/removebg', headers=headers, data=data, stream=True)
 
@@ -94,17 +88,16 @@ def validate_response(response: requests.Response) -> typing.Union[str, None]:
     return err_msg
 
 
-async def remove_bg(ctx, api_keys: api_key_list, url: str, bg_url: str = '') -> None:
+async def remove_bg(ctx, api_keys: api_key_list, url: str) -> None:
     """Attempts to remove the background from the image given in the url.
 
     Args:
         ctx ([type]): The discord context object 
         api_keys (api_key_list): An api_key_list object
         url (str): The url containing the image to be processed
-        bg_url (str, optional): The url containing the background
     """    
     if api_keys.curr_key is not None:
-        response = remove_bg_from_img(api_keys.curr_key, url, bg_url)
+        response = remove_bg_from_img(api_keys.curr_key, url)
         err_msg = validate_response(response)
         if err_msg is None:
             await ctx.send(file=byte_to_discord_file(response.content))

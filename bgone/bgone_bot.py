@@ -61,7 +61,7 @@ async def removebg(ctx, url: typing.Optional[str] = ''):
 async def credits_left(ctx):
     """Displays the number of free API calls left.
     """    
-    await ctx.send(f'{key_list.get_total_credits()} free API calls left')
+    await ctx.send(f'{key_list.total_credits} free API calls left')
 
 
 if __name__ == '__main__':

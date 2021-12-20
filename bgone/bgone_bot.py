@@ -1,6 +1,6 @@
 import typing
-import discord
 
+import discord
 from discord.ext import commands
 
 import utility as util

@@ -3,9 +3,10 @@ import typing
 
 import discord
 import requests
+from PIL import Image
+
 from api_key_list import api_key_list
 from config import API_URL
-from PIL import Image
 
 
 def remove_bg_from_img(api_key: str, img_url: str) -> requests.Response:
@@ -41,10 +42,6 @@ def crop_to_bbox(im_bytes: bytes) -> bytes:
     
     with Image.open(io.BytesIO(im_bytes)) as im:
         bbox = im.getbbox()
-        
-        if bbox is None:
-            return
-        
         im = im.crop(bbox)
         im.save(result_img_btye, format='PNG')
         

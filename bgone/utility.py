@@ -11,7 +11,7 @@ API_URL = 'https://api.remove.bg/v1.0'
 
 def image_url_to_b64(url: str) -> typing.Union[str, None]:
     """converts the image located at the url to a base64 encoded string. Returns
-    None if the url does not contain an image or if the request fails
+    None if the url does not contain an image or if the request fails.
 
     Args:
         url (str): the url containing the image
@@ -46,9 +46,7 @@ def remove_bg_from_img(api_key: str, img_url: str, bg_img_url: str = '', ) -> re
         requests.Response: the response from the call
     """
     headers = {'X-Api-Key': api_key}
-    # data = {'crop': True,
-    #         'image_url': img_url,
-    #         'format': 'png'}
+
     data = {'image_url': img_url,
             'crop': True}
 
@@ -60,7 +58,7 @@ def remove_bg_from_img(api_key: str, img_url: str, bg_img_url: str = '', ) -> re
 
 
 def byte_to_discord_file(obj: bytes) -> discord.File:
-    """converts the bytes object to a discord file
+    """Converts the bytes object to a discord file.
 
     Args:
         obj (bytes): the byte object to be converted
@@ -74,8 +72,8 @@ def byte_to_discord_file(obj: bytes) -> discord.File:
 
 
 def get_message_img_url(msg: discord.Message) -> typing.Union[str, None]:
-    """returns the first valid image url in the message or None if one cannot 
-    be found
+    """Returns the first valid image url in the message or None if one cannot 
+    be found.
 
     Args:
         msg (discord.Message): [description]
@@ -96,21 +94,9 @@ def get_message_img_url(msg: discord.Message) -> typing.Union[str, None]:
     return None
 
 
-def num_credits_left(api_keys: api_key_list) -> int:
-    """returns the number of api credits left.
-
-    Args:
-        api_keys (api_key_list): an api_key_list object
-
-    Returns:
-        int: the number of api credits left
-    """    
-    return api_keys.get_total_credits()
-
-
 def validate_response(response: requests.Response) -> typing.Union[str, None]:
-    """returns None if response status code is ok, otherwise return a customized
-    error message
+    """Returns None if response status code is ok, otherwise return a customized
+    error message.
 
     Args:
         response (requests.Response): [description]
@@ -133,16 +119,16 @@ def validate_response(response: requests.Response) -> typing.Union[str, None]:
 
 
 async def remove_bg(ctx, api_keys: api_key_list, url: str, bg_url: str = '') -> None:
-    """attempts to remove the background from the image given in the url
+    """Attempts to remove the background from the image given in the url.
 
     Args:
-        ctx ([type]): the discord context object 
-        api_keys (api_key_list): an api_key_list object
-        url (str): the url containing the image to be processed
-        bg_url (str, optional): the url containing the background
+        ctx ([type]): The discord context object 
+        api_keys (api_key_list): An api_key_list object
+        url (str): The url containing the image to be processed
+        bg_url (str, optional): The url containing the background
     """    
-    if api_keys.get_key() is not None:
-        response = remove_bg_from_img(api_keys.get_key(), url, bg_url)
+    if api_keys.curr_key is not None:
+        response = remove_bg_from_img(api_keys.curr_key, url, bg_url)
         err_msg = validate_response(response)
         if err_msg is None:
             await ctx.send(file=byte_to_discord_file(response.content))

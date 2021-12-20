@@ -79,7 +79,7 @@ class api_key_list():
         """Decreases the current key's credit by 1 and replaces it with a new
         key if credits for it run out.
         """
-        if self.get_total_credits() == 0:
+        if self.total_credits == 0:
             return
 
         self._api_keys[self._curr_key] -= 1

@@ -1,4 +1,5 @@
 import typing
+import discord
 
 from discord.ext import commands
 
@@ -16,9 +17,16 @@ async def on_ready():
     print(f'{bot.user.name} has connected to Discord!')
     
 
-@bot.event
-async def on_message():
-    pass
+@bot.listen('on_message')
+async def on_message(message: discord.Message):
+    cleaned_message = message.content.strip().lower()
+    jar_emoji = discord.utils.get(message.guild.emojis, name='jar3')
+    
+    if cleaned_message == 'come':
+        if jar_emoji:
+            await message.add_reaction(jar_emoji)
+        else:
+            await message.add_reaction('💦')
 
 
 @bot.command(name='removebg')

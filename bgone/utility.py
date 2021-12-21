@@ -99,7 +99,7 @@ def validate_response(response: requests.Response) -> typing.Union[str, None]:
         return None
 
     if response.status_code == 400:
-        err_msg = 'The foreground cannot be detected.'
+        err_msg = 'Invalid URL or the foreground cannot be detected.'
     elif response.status_code == 402:
         err_msg = 'Out of API credits!'
     elif response.status_code == 429:

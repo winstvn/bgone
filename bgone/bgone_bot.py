@@ -17,6 +17,13 @@ async def on_ready():
     print(f'{bot.user.name} has connected to Discord!')
     
 
+@bot.event
+async def on_command_error(ctx, error):
+    if isinstance(error, commands.CommandNotFound):
+        return
+    raise error
+    
+
 @bot.listen('on_message')
 async def on_message(message: discord.Message):
     cleaned_message = message.content.strip().lower()
@@ -48,7 +55,7 @@ async def removebg(ctx, url: typing.Optional[str] = ''):
                 if url is not None:
                     break
             else:
-                await ctx.send('Image not found!')
+                await ctx.send(f'Could not detect an image in the last {MSG_HISTORY_LIMIT} messages!')
                 return
 
             result_img = util.remove_bg(key_list, url)

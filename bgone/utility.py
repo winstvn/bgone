@@ -30,7 +30,7 @@ def remove_bg_from_img(api_key: str, img_url: str) -> requests.Response:
 
 
 def crop_to_bbox(im_bytes: bytes) -> bytes:
-    """Crop the image byte array to smallest non-zero image array.
+    """Crop empty regions from the image byte array.
 
     Args:
         im_bytes (bytes): Byte array representation of the image

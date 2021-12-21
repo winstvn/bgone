@@ -1,5 +1,6 @@
 import io
 import typing
+import json
 
 import discord
 import requests
@@ -26,7 +27,7 @@ def remove_bg_from_img(api_key: str, img_url: str) -> requests.Response:
     data = {'image_url': img_url,
             'crop': True}
 
-    return requests.post(API_URL + '/removebg', headers=headers, data=data, stream=True)
+    return requests.post(f'{API_URL}/removebg', headers=headers, data=data)
 
 
 def crop_to_bbox(im_bytes: bytes) -> bytes:
@@ -86,8 +87,8 @@ def extract_message_img_url(msg: discord.Message) -> typing.Union[str, None]:
 
 
 def validate_response(response: requests.Response) -> typing.Union[str, None]:
-    """Returns None if response status code is ok, otherwise return a customized
-    error message.
+    """Returns None if response status code is ok, otherwise return the error
+    message in the response.
 
     Args:
         response (requests.Response): [description]
@@ -98,15 +99,8 @@ def validate_response(response: requests.Response) -> typing.Union[str, None]:
     if response.status_code == requests.codes.ok:
         return None
 
-    if response.status_code == 400:
-        err_msg = 'Invalid URL or the foreground cannot be detected.'
-    elif response.status_code == 402:
-        err_msg = 'Out of API credits!'
-    elif response.status_code == 429:
-        err_msg = 'Rate limit exceeded. Please try again later.'
-    else:
-        err_msg = 'Uncaught HTTP exception.'
-    return err_msg
+    error = json.loads(response.text)
+    return error['errors'][0]['title']
 
 
 def remove_bg(api_keys: api_key_list, url: str) -> None:

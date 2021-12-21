@@ -9,7 +9,7 @@ from config import *
 
 # initialize the bot and the key list
 bot = commands.Bot(command_prefix='!')
-key_list = api_key_list(API_KEYS, util.API_URL+'/account')
+key_list = api_key_list(API_KEYS, f'{API_URL}/account')
 
 
 @bot.event

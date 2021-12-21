@@ -9,6 +9,7 @@ from requests.exceptions import HTTPError
 
 from api_key_list import api_key_list
 from config import API_URL
+from exceptions import OutOfCreditsException, RemovebgHTTPException
 
 
 def remove_bg_from_img(api_key: str, img_url: str) -> requests.Response:
@@ -24,20 +25,22 @@ def remove_bg_from_img(api_key: str, img_url: str) -> requests.Response:
     """
     headers = {'X-Api-Key': api_key}
 
-    data = {'image_url': img_url,
-            'crop': True}
+    data = {
+        'image_url': img_url,
+        'crop': True
+        }
 
     return requests.post(f'{API_URL}/removebg', headers=headers, data=data)
 
 
 def crop_to_bbox(im_bytes: bytes) -> bytes:
-    """Crop empty regions from the image byte array.
+    """Crop empty regions from the image byte representation.
 
     Args:
-        im_bytes (bytes): Byte array representation of the image.
+        im_bytes (bytes): Byte representation of the image.
 
     Returns:
-        bytes: Byte array representation of the cropped image.
+        bytes: Byte representation of the cropped image.
     """    
     result_img_btye = io.BytesIO()
     
@@ -68,18 +71,18 @@ def extract_message_img_url(msg: discord.Message) -> typing.Union[str, None]:
     be found.
 
     Args:
-        msg (discord.Message): A discord.Message object.
+        msg (Message): A Message object.
 
     Returns:
-        str|None: The first valid image url in the message or None.
+        str | None: The first valid image url in the message or None.
     """
     # check if the image url is in the message contents first
-    if msg.clean_content[-4:] in ['.jpg', '.png', 'jpeg']:
+    if msg.clean_content[-4:].lower() in ['.jpg', '.png', 'jpeg']:
         return msg.clean_content
 
     # check for an image url in the attachments afterwards
     for attachment in msg.attachments:
-        if attachment.url[-4:] in ['.jpg', '.png', 'jpeg']:
+        if attachment.url[-4:].lower() in ['.jpg', '.png', 'jpeg']:
             return attachment.url
 
     # return None if no image urls were found
@@ -91,27 +94,33 @@ def validate_response(response: requests.Response) -> None:
     using the error message from the response.
 
     Args:
-        response (requests.Response): The response from remove.bg API call.
+        response (Response): The response from remove.bg API call.
 
     Raises:
         HTTPError: An HTTPError containing the error message returned.
     """    
     if response.status_code != requests.codes.ok:
-        error = json.loads(response.text)
-        raise HTTPError(error['errors'][0]['title'])
+        raise HTTPError(response)
     
     return
 
 
-def remove_bg(api_keys: api_key_list, url: str) -> None:
+def remove_bg(api_keys: api_key_list, url: str) -> bytes:
     """Attempts to remove the background from the image given in the url.
 
     Args:
         api_keys (api_key_list): An api_key_list object.
         url (str): The url containing the image to be processed.
+
+    Raises:
+        OutOfCreditsException: Raised when there are no more available API keys.
+        RemovebgHTTPException: Raised when there was an HTTP error from remove.bg API.
+
+    Returns:
+        bytes: A byte representation of the image with background removed.
     """
     if api_keys.curr_key is None:
-        raise Exception('Out of API credits!')
+        raise OutOfCreditsException('Out of API credits!')
     
     response = remove_bg_from_img(api_keys.curr_key, url)
     try:
@@ -119,4 +128,6 @@ def remove_bg(api_keys: api_key_list, url: str) -> None:
         api_keys.use_key()
         return crop_to_bbox(response.content)
     except HTTPError as e:
-        raise e
+        error = json.loads(response.text)
+        error_msg = error['errors'][0]['title']
+        raise RemovebgHTTPException(error_msg) from e

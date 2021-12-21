@@ -2,10 +2,10 @@ import typing
 
 import discord
 from discord.ext import commands
-from requests.exceptions import HTTPError
 
 import utility as util
 from api_key_list import api_key_list
+from exceptions import OutOfCreditsException, RemovebgHTTPException
 from config import *
 
 # initialize the bot and the key list
@@ -54,11 +54,11 @@ async def removebg(ctx, url: typing.Optional[str] = ''):
             else:
                 await ctx.send(f'Could not detect an image in the last {MSG_HISTORY_LIMIT} messages!')
                 return
-            
+        
         try:
             result_img = util.remove_bg(key_list, url)
             await ctx.send(file=util.byte_to_discord_file(result_img))
-        except (Exception, HTTPError) as e:
+        except (OutOfCreditsException, RemovebgHTTPException) as e:
             await ctx.send(e)
 
 

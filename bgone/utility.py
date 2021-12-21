@@ -5,22 +5,22 @@ import json
 import discord
 import requests
 from PIL import Image
+from requests.exceptions import HTTPError
 
 from api_key_list import api_key_list
 from config import API_URL
 
 
 def remove_bg_from_img(api_key: str, img_url: str) -> requests.Response:
-    """Removes the background from the image in the url and returns the response 
-    object. If a bg_img_url is given, then replace the background with the 
-    background image.
+    """Removes the background from the image in the url by a POST request to
+    remove.bg API and returns the response object.
 
     Args:
-        api_key (str): the API key to use
-        img_url (str): the url containing the image to process
+        api_key (str): The API key to use.
+        img_url (str): The url containing the image to process.
 
     Returns:
-        requests.Response: the response from the call
+        requests.Response: The response from the POST request.
     """
     headers = {'X-Api-Key': api_key}
 
@@ -34,10 +34,10 @@ def crop_to_bbox(im_bytes: bytes) -> bytes:
     """Crop empty regions from the image byte array.
 
     Args:
-        im_bytes (bytes): Byte array representation of the image
+        im_bytes (bytes): Byte array representation of the image.
 
     Returns:
-        bytes: Byte array representation of the cropped image
+        bytes: Byte array representation of the cropped image.
     """    
     result_img_btye = io.BytesIO()
     
@@ -53,10 +53,10 @@ def byte_to_discord_file(obj: bytes) -> discord.File:
     """Converts the bytes object to a discord file.
 
     Args:
-        obj (bytes): the byte object to be converted
+        obj (bytes): The byte object to be converted.
 
     Returns:
-        discord.File: a discord file containing the byte object
+        discord.File: A discord file containing the byte object.
     """
     obj = io.BytesIO(obj)
     obj.name = 'bgone_result.png'
@@ -68,10 +68,10 @@ def extract_message_img_url(msg: discord.Message) -> typing.Union[str, None]:
     be found.
 
     Args:
-        msg (discord.Message): [description]
+        msg (discord.Message): A discord.Message object.
 
     Returns:
-        typing.Union[str, None]: [description]
+        str|None: The first valid image url in the message or None.
     """
     # check if the image url is in the message contents first
     if msg.clean_content[-4:] in ['.jpg', '.png', 'jpeg']:
@@ -86,38 +86,37 @@ def extract_message_img_url(msg: discord.Message) -> typing.Union[str, None]:
     return None
 
 
-def validate_response(response: requests.Response) -> typing.Union[str, None]:
-    """Returns None if response status code is ok, otherwise return the error
-    message in the response.
+def validate_response(response: requests.Response) -> None:
+    """Returns None if response status code is ok, otherwise raise an HTTPerror
+    using the error message from the response.
 
     Args:
-        response (requests.Response): [description]
+        response (requests.Response): The response from remove.bg API call.
 
-    Returns:
-        typing.Union[str, None]: [description]
-    """
-    if response.status_code == requests.codes.ok:
-        return None
-
-    error = json.loads(response.text)
-    return error['errors'][0]['title']
+    Raises:
+        HTTPError: An HTTPError containing the error message returned.
+    """    
+    if response.status_code != requests.codes.ok:
+        error = json.loads(response.text)
+        raise HTTPError(error['errors'][0]['title'])
+    
+    return
 
 
 def remove_bg(api_keys: api_key_list, url: str) -> None:
     """Attempts to remove the background from the image given in the url.
 
     Args:
-        api_keys (api_key_list): An api_key_list object
-        url (str): The url containing the image to be processed
+        api_keys (api_key_list): An api_key_list object.
+        url (str): The url containing the image to be processed.
     """
     if api_keys.curr_key is None:
-        return 'Out of API credits!'
+        raise Exception('Out of API credits!')
     
     response = remove_bg_from_img(api_keys.curr_key, url)
-    err_msg = validate_response(response)
-    
-    if err_msg is None:
+    try:
+        validate_response(response)
         api_keys.use_key()
         return crop_to_bbox(response.content)
-    else:
-        return err_msg
+    except HTTPError as e:
+        raise e

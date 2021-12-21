@@ -2,6 +2,7 @@ import typing
 
 import discord
 from discord.ext import commands
+from requests.exceptions import HTTPError
 
 import utility as util
 from api_key_list import api_key_list
@@ -42,14 +43,10 @@ async def removebg(ctx, url: typing.Optional[str] = ''):
     or the most recently sent image.
 
     Args:
-        url (str): A optional url containing an image to remove the background \
-                   from. If one is not given, then begone bot will attempt to \
-                   use an image from the message history.
+        url (str): A optional url containing an image to remove the background from.
     """
     async with ctx.typing():
-        if url:
-            result_img = util.remove_bg(key_list, url)
-        else:
+        if url == '':
             async for msg in ctx.channel.history(limit=MSG_HISTORY_LIMIT):
                 url = util.extract_message_img_url(msg)
                 if url is not None:
@@ -57,13 +54,12 @@ async def removebg(ctx, url: typing.Optional[str] = ''):
             else:
                 await ctx.send(f'Could not detect an image in the last {MSG_HISTORY_LIMIT} messages!')
                 return
-
+            
+        try:
             result_img = util.remove_bg(key_list, url)
-        
-        if isinstance(result_img, str):
-            await ctx.send(result_img)
-        else:
             await ctx.send(file=util.byte_to_discord_file(result_img))
+        except (Exception, HTTPError) as e:
+            await ctx.send(e)
 
 
 @bot.command(name='credits-left')

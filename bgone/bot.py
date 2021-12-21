@@ -5,8 +5,8 @@ from discord.ext import commands
 
 import utility as util
 from api_key_list import api_key_list
-from exceptions import OutOfCreditsException, RemovebgHTTPException
 from config import *
+from exceptions import *
 
 # initialize the bot and the key list
 bot = commands.Bot(command_prefix='!')
@@ -45,20 +45,16 @@ async def removebg(ctx, url: typing.Optional[str] = ''):
     Args:
         url (str): A optional url containing an image to remove the background from.
     """
+    
     async with ctx.typing():
-        if url == '':
-            async for msg in ctx.channel.history(limit=MSG_HISTORY_LIMIT):
-                url = util.extract_message_img_url(msg)
-                if url is not None:
-                    break
-            else:
-                await ctx.send(f'Could not detect an image in the last {MSG_HISTORY_LIMIT} messages!')
-                return
-        
         try:
+            url = await util.find_img_url_in_history(ctx, MSG_HISTORY_LIMIT) if url == '' else url
             result_img = util.remove_bg(key_list, url)
             await ctx.send(file=util.byte_to_discord_file(result_img))
-        except (OutOfCreditsException, RemovebgHTTPException) as e:
+            
+        except (OutOfCreditsException, 
+                RemovebgHTTPException, 
+                ImgNotInHistoryException) as e:
             await ctx.send(e)
 
 

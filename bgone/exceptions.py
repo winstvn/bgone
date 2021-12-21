@@ -5,3 +5,7 @@ class OutOfCreditsException(Exception):
 class RemovebgHTTPException(Exception):    
     '''HTTP Error returned from remove.bg API'''
     pass
+
+class ImgNotInHistoryException(Exception):
+    '''An image URL was not found in message history'''
+    pass

@@ -1,6 +1,6 @@
 import io
-import typing
 import json
+import typing
 
 import discord
 import requests
@@ -9,7 +9,7 @@ from requests.exceptions import HTTPError
 
 from api_key_list import api_key_list
 from config import API_URL
-from exceptions import OutOfCreditsException, RemovebgHTTPException
+from exceptions import *
 
 
 def remove_bg_from_img(api_key: str, img_url: str) -> requests.Response:
@@ -87,6 +87,15 @@ def extract_message_img_url(msg: discord.Message) -> typing.Union[str, None]:
 
     # return None if no image urls were found
     return None
+
+
+async def find_img_url_in_history(ctx, limit: int) -> str:
+    async for msg in ctx.channel.history(limit=limit):
+        url = extract_message_img_url(msg)
+        if url is not None:
+            return url
+    else:
+        raise ImgNotInHistoryException(f'Could not detect an image in the last {limit} messages!')
 
 
 def validate_response(response: requests.Response) -> None:

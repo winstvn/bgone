@@ -4,12 +4,11 @@ import typing
 
 import discord
 import requests
+from bgone.config import API_URL
+from bgone.utility.api_key_list import api_key_list
+from bgone.exceptions import *
 from PIL import Image
 from requests.exceptions import HTTPError
-
-from bgone.utility.api_key_list import api_key_list
-from bgone.config import API_URL
-from exceptions import *
 
 
 def remove_bg_from_img(api_key: str, img_url: str) -> requests.Response:

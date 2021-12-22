@@ -7,8 +7,8 @@ import requests
 from PIL import Image
 from requests.exceptions import HTTPError
 
-from api_key_list import api_key_list
-from config import API_URL
+from bgone.utility.api_key_list import api_key_list
+from bgone.config import API_URL
 from exceptions import *
 
 

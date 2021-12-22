@@ -8,3 +8,8 @@ API_KEYS = os.environ['REMOVE_BG_API_KEY'].split(', ')
 MSG_HISTORY_LIMIT = 10
 
 API_URL = 'https://api.remove.bg/v1.0'
+
+COGS = [
+    'cogs.removebg',
+    'cogs.listeners'
+]

@@ -30,8 +30,8 @@ class EmojifierView(discord.ui.View):
     async def no_callback(self, button, interaction):
         self.disable_buttons()
         await interaction.response.edit_message(content='The emoji was not created.', view=self)
-        await self.ctx.guild.delete_emoji(self.emoji)
+        await self.ctx.guild.delete_emoji(self.emoji, reason=f'{self.ctx.author} rejected the confirmation')
         self.stop()
         
     async def on_timeout(self):
-        await self.ctx.guild.delete_emoji(self.emoji)
+        await self.ctx.guild.delete_emoji(self.emoji, reason='Timed out')

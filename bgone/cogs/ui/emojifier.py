@@ -42,6 +42,7 @@ class Emojifier(commands.Cog, name='emojifier'):
                 await ctx.guild.create_custom_emoji(
                     name=name,
                     image=img_byte,
+                    reason=f'Created by {str(ctx.author)}'
                 )
                 
                 new_emoji = discord.utils.get(ctx.guild.emojis, name=name)

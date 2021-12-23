@@ -9,7 +9,10 @@ MSG_HISTORY_LIMIT = 10
 
 API_URL = 'https://api.remove.bg/v1.0'
 
+EMOJIFIER_VIEW_TIMEOUT = 15
+
 COGS = [
+    'cogs.ui.emojifier',
     'cogs.removebg',
     'cogs.listeners'
 ]

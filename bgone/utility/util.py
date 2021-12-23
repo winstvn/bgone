@@ -51,6 +51,31 @@ def crop_to_bbox(im_bytes: bytes) -> bytes:
     return result_img_btye.getvalue()
 
 
+def get_image_btye_from_url(url: str) -> bytes:
+    """Returns the image in byte representation from the url provided.
+
+    Args:
+        url (str): URL containing the image.
+
+    Raises:
+        HTTPError: [description]
+        NotAnImageUrl: [description]
+
+    Returns:
+        bytes: Btye representation of the image.
+    """    
+    try:
+        response = requests.get(url)
+        validate_response(response)
+    except HTTPError as e:
+        raise HTTPError(f'{response.status_code}: {response.reason}') from e
+    
+    if response.headers['content-type'] in ('image/png', 'image/jpeg', 'image/gif'):
+        return response.content
+    else:
+        raise NotAnImageUrl('The URL provided does not contain an image.')
+
+
 def byte_to_discord_file(obj: bytes) -> discord.File:
     """Converts the bytes object to a discord file.
 

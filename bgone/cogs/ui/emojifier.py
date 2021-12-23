@@ -53,7 +53,7 @@ class Emojifier(commands.Cog, name='emojifier'):
                 
                 confirmation_message = await ctx.send(
                     content=f'Emoji preview: {str(new_emoji)}\nWould you like to keep this?'
-                            f'\n\n*Note: This menu will time out in {EMOJIFIER_VIEW_TIMEOUT} seconds.*',
+                            f'\n*Note: This menu will time out in {EMOJIFIER_VIEW_TIMEOUT} seconds.*',
                     view=confirmation_view
                     )
                 

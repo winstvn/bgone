@@ -1,12 +1,13 @@
 import io
 import json
+import re
 import typing
 
 import discord
 import requests
 from bgone.config import API_URL
-from bgone.utility.api_key_list import api_key_list
 from bgone.exceptions import *
+from bgone.utility.api_key_list import api_key_list
 from PIL import Image
 from requests.exceptions import HTTPError
 
@@ -70,10 +71,10 @@ def get_image_btye_from_url(url: str) -> bytes:
     except HTTPError as e:
         raise HTTPError(f'{response.status_code}: {response.reason}') from e
     
-    if response.headers['content-type'] in ('image/png', 'image/jpeg', 'image/gif'):
+    if response.headers['content-type'] in {'image/png', 'image/jpeg', 'image/gif'}:
         return response.content
     else:
-        raise NotAnImageUrl('The URL provided does not contain an image.')
+        raise NotAnImageUrl('The URL provided does not contain an image or gif.')
 
 
 def byte_to_discord_file(obj: bytes) -> discord.File:
@@ -91,7 +92,7 @@ def byte_to_discord_file(obj: bytes) -> discord.File:
 
 
 def extract_message_img_url(msg: discord.Message) -> typing.Union[str, None]:
-    """Returns the first valid image url in the message or None if one cannot 
+    """Returns the first valid image/gif url in the message or None if one cannot 
     be found.
 
     Args:
@@ -100,14 +101,15 @@ def extract_message_img_url(msg: discord.Message) -> typing.Union[str, None]:
     Returns:
         str | None: The first valid image url in the message or None.
     """
-    # check if the image url is in the message contents first
-    if msg.clean_content[-4:].lower() in ['.jpg', '.png', 'jpeg']:
-        return msg.clean_content
-
-    # check for an image url in the attachments afterwards
+    # check for an image url in the attachments first
     for attachment in msg.attachments:
-        if attachment.url[-4:].lower() in ['.jpg', '.png', 'jpeg']:
+        if attachment.url[-4:].lower() in {'.jpg', '.png', 'jpeg', '.gif'}:
             return attachment.url
+        
+    # extract the image from the message afterwards
+    matches = re.findall(r'(https?://\S+)', msg.clean_content)
+    if matches:
+        return matches[0]
 
     # return None if no image urls were found
     return None

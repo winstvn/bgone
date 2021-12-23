@@ -14,6 +14,7 @@ class Emojifier(commands.Cog, name='emojifier'):
         self.bot = bot
 
     @commands.command(name='make-emoji')
+    @commands.has_permissions(manage_emojis=True)
     async def make_emoji(self, ctx: commands.Context, name: str, url: str = '') -> None:
         """Create a server emoji with the given name.
 

@@ -20,7 +20,7 @@ class Emojifier(commands.Cog, name='emojifier'):
 
         Args:
             name (str): An emoji name with 2 or more alphanumeric and underscore characters.
-            url (str): Image url to create a server emoji from.
+            url (str): Optional image url to create a server emoji from.
         """
         async with ctx.typing():
             try:
@@ -59,12 +59,21 @@ class Emojifier(commands.Cog, name='emojifier'):
                     view=confirmation_view
                     )
                 
-                # edit confirmation message to indicate view timeout
+                # edit message after interaction completes
                 if await confirmation_view.wait():
                     await confirmation_message.edit(
                         content='Timed out! The emoji was not created.',
                         view=None
                         )
+                    await ctx.guild.delete_emoji(new_emoji, reason=f'Interaction timed out')
+                else:
+                    content = f'{str(new_emoji)} has been created!' if confirmation_view.response else 'The emoji was not created.'
+                    await confirmation_message.edit(
+                        content=content,
+                        view=confirmation_view
+                    )
+                    if not confirmation_view.response:
+                        await ctx.guild.delete_emoji(new_emoji, reason=f'{ctx.author} rejected the confirmation')
                 
             except ImgNotInHistoryException as e:
                 await ctx.send(e)

@@ -3,7 +3,7 @@ from discord.ext import commands
 
 
 class Listeners(commands.Cog, name='listeners'):
-    def __init__(self, bot) -> None:
+    def __init__(self, bot: commands.Bot) -> None:
         self.bot = bot
 
     @commands.Cog.listener()
@@ -19,6 +19,9 @@ class Listeners(commands.Cog, name='listeners'):
     
     @commands.Cog.listener()
     async def on_message(self, message: discord.Message):
+        if message.author == self.bot.user:
+            return
+        
         cleaned_message = message.content.strip().lower()
         jar_emoji = discord.utils.get(message.guild.emojis, name='jar3')
         

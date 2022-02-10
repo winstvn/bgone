@@ -1,3 +1,4 @@
+from ast import alias
 import re
 
 import discord
@@ -13,7 +14,7 @@ class Emojifier(commands.Cog, name='emojifier'):
     def __init__(self, bot) -> None:
         self.bot = bot
 
-    @commands.command(name='make-emoji')
+    @commands.command(name='make-emoji', aliases=['make-emote'])
     @commands.has_permissions(manage_emojis=True)
     async def make_emoji(self, ctx: commands.Context, name: str, url: str = '') -> None:
         """Create a server emoji with the given name.
